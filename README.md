@@ -64,8 +64,7 @@ NetBeans IDE (recommended)
 Git (for version control)
 GitHub account (for submission)
 Clone the Repository
-git clone https://github.com/ST10476385/PROG5121-POE-ChatApp.git
-cd PROG5121-POE-ChatApp
+git clone 
 Open in NetBeans
 Open NetBeans IDE.
 Go to File → Open Project.

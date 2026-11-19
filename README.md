@@ -1,129 +1,192 @@
 # st10524311-programming1a
 This is the Chat App Proof of Engagement (PoE) for the module PROG5121. It is a console-based chat application (QuickChat) built in two parts.
 
-Part 1 – Registration and Login
+# QuickChat – Java Messaging Application
 
-Create an account by providing a username, password, and South African cell phone number.
-Log in using the same credentials.
-Part 2 – Sending Messages
+## 1. Project Description
 
-After a successful login, the user sees a welcome message and a numeric menu.
-The user says how many messages they want to enter, then enters the recipient and message text for each one.
-Each message gets a unique 10-digit Message ID, a Message Hash, and a message number.
-For each message the user can send it, disregard it, or store it to send later (stored messages are saved to a JSON file).
-At the end, the application shows the total number of messages sent and the messages that were sent.
-The application validates all inputs using the rules specified in the assignment brief and provides clear feedback to the user. Every part is tested with JUnit 5 and the tests run automatically on GitHub.
+QuickChat is a Java-based messaging application developed to allow users to register, log in and communicate through messages.
 
-Features
-Feature	Description
-Username Validation	Must contain an underscore (_) and be no more than 5 characters long.
-Password Complexity	Must be at least 8 characters, contain a capital letter, a number, and a special character.
-Cell Phone Validation	Must start with the South African country code (+27) and be followed by 1–10 digits.
-Registration	Stores user details (first name, last name, username, password, cell number).
-Login	Verifies credentials and returns a welcome message or error message.
-Welcome Message and Menu	Shows "Welcome to QuickChat." and a numeric menu: 1) Send Messages, 2) Show recently sent messages ("Coming Soon."), 3) Quit. The menu runs in a while loop until the user quits.
-Number of Messages	The user sets how many messages they will enter once, at the start. A for loop then runs exactly that many times.
-Message Number	Comes from the for loop counter, so the first message is number 0.
-Message ID	Randomly generated 10-digit number.
-Message Hash	First two digits of the Message ID, a colon, the message number, a colon, then the first and last words of the message in capitals (for example 00:0:HITONIGHT).
-Message Length Check	A message may not be longer than 250 characters. If it is too long, the app says how many characters over the limit it is.
-Recipient Check	Reuses the cell phone check from the Login class (international code followed by the number).
-Send, Disregard or Store	The user chooses what to do with each message. Only sent messages count towards the total.
-JSON Storage	Stored messages are written to messages.json as a valid JSON array.
-Unit Testing	JUnit 5 tests for the Login class (14 tests) and the Message class (13 tests).
-Automated Testing	A GitHub Actions workflow (TestJava.yml) runs all the tests on every push and pull request.
-Technologies Used
-Technology	Purpose
-Java (JDK 25)	Core programming language
-Maven	Build automation and dependency management
-JUnit 5	Unit testing framework
-Git	Version control
-GitHub	Remote repository hosting
-GitHub Actions	Continuous integration (automated tests)
-NetBeans IDE	Development environment
-Project Structure
-The project now also contains the Part 2 files:
+The application uses object-oriented programming, arrays, methods, loops, conditional statements and JSON file storage.
 
-PROG5121-POE-ChatApp
-├── .github/workflows/TestJava.yml      (GitHub Actions workflow)
-├── src
-│   ├── main/java/com/mycompany/chatapp/part1
-│   │   ├── ChatAppPart1.java           (main program: registration, login, menu, sending messages)
-│   │   ├── Login.java                  (Part 1: registration and login checks)
-│   │   └── Message.java                (Part 2: message ID, hash, checks, send/store, JSON)
-│   └── test/java/com/mycompany/chatapp/part1
-│       ├── LoginTest.java              (14 unit tests)
-│       └── MessageTest.java            (13 unit tests)
-├── pom.xml
-└── README.md
-Setup Instructions
-Prerequisites
-Java JDK 25 or later
-Maven (optional – if using the command line)
-NetBeans IDE (recommended)
-Git (for version control)
-GitHub account (for submission)
-Clone the Repository
-git clone 
-Open in NetBeans
-Open NetBeans IDE.
-Go to File → Open Project.
-Navigate to the project folder and select it.
-Click Open Project.
-How to Run the Application
-Option 1: Run from NetBeans
-In the Projects tab, expand ChatApp-Part1.
-Expand Source Packages → com.mycompany.chatapp.part1.
-Right-click ChatAppPart1.java → Run File (or press Shift + F6).
-Option 2: Run from Command Line (with Maven)
-mvn compile
-mvn exec:java -Dexec.mainClass="com.mycompany.chatapp.part1.ChatAppPart1"
-Expected Output – Part 1 (Registration and Login)
-The application will guide you through registration and login:
+The project was developed using NetBeans IDE with Java and Ant.
 
-=== Registration ===
-Enter a username (must contain _ and be 5 characters or less): kyl_1
-Enter a password (8+ characters, a capital letter, a number and a special character): Ch&&sec@ke99!
-Enter your cell number (with country code, example +27614880723): +27838968976
-Enter your first name: John
-Enter your last name: Doe
-Username successfully captured. Password successfully captured. Cell phone number successfully added.
+## 2. Main Features
 
-=== Login ===
-Enter your username: kyl_1
-Enter your password: Ch&&sec@ke99!
-Welcome John, Doe it is great to see you again.
+### Part 1: User Registration and Login
 
+The application allows users to:
+- Register a new account.
+- Enter their first name and last name.
+- Create a valid username.
+- Create a password that meets the required complexity.
+- Enter and validate a cellphone number.
+- Log in using their registered username and password.
+- Receive feedback on whether login was successful.
 
-image
-Expected Output – Part 2 (Sending Messages)
-After a successful login the QuickChat menu starts. The Message IDs are random, so yours will differ:
+### Part 2: Messaging
 
-Welcome to QuickChat.
-How many messages do you wish to enter? 3
+The messaging functionality allows users to:
+- Enter the number of messages they want to send.
+- Enter a recipient's cellphone number.
+- Write messages.
+- Validate message length.
+- Generate a unique message ID.
+- Generate a message hash.
+- Choose whether to send, disregard or store a message.
+- Display message information and confirmation messages.
 
---- Menu ---
-Option 1) Send Messages
-Option 2) Show recently sent messages
-Option 3) Quit
-Choose an option: 1
+### Part 3: Message Management and Storage
 
---- Message 1 of 3 ---
-Enter recipient cell number (with international code, example +27718693002): +27718693002
-Cell phone number successfully captured.
-Enter your message (max 250 characters): Hi Mike, can you join us for dinner tonight?
-Message ready to send.
-Message ID generated: 7363025905
+Part 3 extends the existing application by adding message management features and arrays.
 
---- Message Details ---
-Message ID: 7363025905
-Message Hash: 73:0:HITONIGHT
-Recipient: +27718693002
-Message: Hi Mike, can you join us for dinner tonight?
+#### 3.1 Arrays
 
-What would you like to do?
-1) Send Message
-2) Disregard Message
-3) Store Message to send later
-Choose an option: 1
-Message successfully sent.
+The application must populate the following arrays without hard-coding the information:
+
+**Sent Messages**
+- Contains all messages that have been sent.
+
+**Disregarded Messages**
+- Contains all messages that were disregarded.
+
+**Stored Messages**
+- Reads the stored messages from the JSON file and places them into an array.
+
+**Message Hash**
+- Contains all message hashes.
+
+**Message ID**
+- Contains all message IDs.
+
+#### 3.2 Fourth Main Menu Option: Stored Messages
+
+A fourth main menu option called **Stored Messages** must be created.
+
+Users must be able to select this option to perform the following operations:
+
+1. Display the sender and recipient of all stored messages.
+2. Display the longest stored message.
+3. Search for a message using its message ID and display the corresponding recipient and message.
+4. Search for all messages stored for a particular recipient.
+5. Delete a message using its message hash.
+6. Display a report containing the full details of all stored messages.
+
+#### 3.3 Message Storage
+
+The application must use JSON file storage to keep stored messages.
+
+The stored messages must be read from the JSON file and loaded into an array so that they can be accessed and managed through the Stored Messages menu.
+
+#### 3.4 Message Searching and Deletion
+
+The application must allow users to search for messages using:
+- Message ID.
+- Recipient cellphone number.
+
+Users must also be able to delete a stored message by providing its message hash.
+
+After deletion, the application must confirm that the correct message was successfully deleted.
+
+#### 3.5 Message Report
+
+The application must generate a report showing the full details of all stored messages.
+
+The report must include:
+- Message hash.
+- Recipient.
+- Message ID.
+- Message content.
+- Other available message details.
+
+## 3. Part 3 Test Data
+
+The following test data must be used to populate the arrays and test the application.
+
+| Message | Recipient / Developer | Message | Flag |
+|---|---|---|---|
+| Message 1 | +27834557896 | Did you get the cake? | Sent |
+| Message 2 | +27838884567 | Where are you? You are late! I have asked you to be on time. | Stored |
+| Message 3 | +27834484567 | Yohoooo, I am at your gate. | Disregarded |
+| Message 4 | 0823884567 (Developer) | It is dinner time! | Sent |
+| Message 5 | +27838884567 | Ok, I am leaving without you. | Stored |
+
+These records are used to test message storage, searching, deletion and reporting.
+
+## 4. Part 3 Unit Testing Requirements
+
+The application must include unit tests using JUnit and the assertEquals method.
+
+The following tests must be created:
+
+1. **Sent Messages Array:** Check that the sent messages array is populated correctly and contains the expected test data.
+2. **Longest Message:** Display the longest message from messages 1–4.
+3. **Search by Message ID:** Search for message ID `0838884567` and check that the system returns the message "It is dinner time!"
+4. **Search by Recipient:** Search for all sent or stored messages belonging to recipient `+27838884567`.
+5. **Delete Message:** Delete Message 2 using its message hash and check that the message is successfully deleted.
+6. **Display Report:** Check that the report displays the stored message details, including the message hash, recipient and message information.
+
+The tests must compare the expected results with the actual results returned by the application.
+
+## 5. Technologies Used
+
+- Java – Main programming language.
+- NetBeans IDE – Development environment.
+- Apache Ant – Project build tool.
+- JSON-simple 1.1 – JSON file reading and writing.
+- JSON – Used for message storage.
+- JUnit 5 – Used for unit testing.
+
+## 6. Project Structure
+
+The project contains the following main files:
+
+- `Myprogfile.java` – Main application, menu and program execution.
+- `Login.java` – Registration and login validation.
+- `Message.java` – Message creation, validation, hashing and management.
+- `LoginTest.java` – Tests registration and login functionality.
+- `MessageTest.java` – Tests message functionality and Part 3 requirements.
+- `messages.json` – Stores message information.
+- `build.xml` – Apache Ant build configuration.
+- `nbproject/` – NetBeans project configuration.
+
+## 7. How to Run the Application
+
+1. Install the Java Development Kit (JDK).
+2. Install NetBeans IDE.
+3. Extract the project ZIP file.
+4. Open NetBeans.
+5. Select File → Open Project.
+6. Select the QuickChat project folder.
+7. Make sure the JSON-simple 1.1 library is added.
+8. Right-click the project and select Clean and Build.
+9. Right-click the project and select Run.
+
+## 8. How to Run the Unit Tests
+
+1. Open the project in NetBeans.
+2. Locate the test folder.
+3. Open `LoginTest.java` or `MessageTest.java`.
+4. Right-click the project.
+5. Select Test.
+6. Check the test results to see whether the expected and actual results match.
+
+## 9. Conclusion
+
+QuickChat demonstrates how Java can be used to develop a messaging application with registration, login, message sending and message management features.
+
+Part 3 improves the application by introducing arrays, JSON file storage, message searching, message deletion and report generation.
+
+JUnit testing is used to check that the application works correctly and produces the expected results.
+
+**Project Name:** QuickChat
+
+**Programming Language:** Java
+
+**IDE:** NetBeans
+
+**Build Tool:** Apache Ant
+
+**Testing Framework:** JUnit 5
+
+**JSON Library:** JSON-simple 1.1

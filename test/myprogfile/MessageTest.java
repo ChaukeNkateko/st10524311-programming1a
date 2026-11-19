@@ -4,186 +4,178 @@
  */
 package myprogfile;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- *
- * @author Student
- */
+import java.nio.file.Files;
+import java.nio.file.Path;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+/** Unit tests for Part 2 message behavior and Part 3 arrays and operations. */
 public class MessageTest {
-    
-    public MessageTest() {
-    }
-    
-    @BeforeAll
-    public static void setUpClass() {
-    }
-    
-    @AfterAll
-    public static void tearDownClass() {
-    }
-    
+
     @BeforeEach
     public void setUp() {
+        Message.resetAllMessageData();
     }
-    
-    @AfterEach
-    public void tearDown() {
+
+    private Message createMessage(String id, int number, String recipient,
+                                  String sender, String text) {
+        return new Message(id, number, recipient, sender, text);
     }
 
     @Test
-    public void testUsernameCorrectlyFormatted_Flow() {
-        Login login = new Login();
-        
-        String regMsg = login.registerUser("kyl_1", "Ch&&sec@ke99!", "+27838968976", "John", "Doe");
-        
-        assertEquals("Username successfully captured. Password successfully captured. Cell phone number successfully added.", regMsg);
-        assertTrue(login.loginUser("kyl_1", "Ch&&sec@ke99!"));
-        
-        assertEquals("Welcome John, Doe it is great to see you again.", login.returnLoginStatus());
+    public void sentDisregardedAndStoredMessagesGoIntoSeparateArrays() {
+        Message sent = createMessage("1111111111", 1, "+27834557896",
+                "0838884567", "Did you get the cake?");
+        Message disregarded = createMessage("3333333333", 3, "+27834484567",
+                "0838884567", "Yohoooo, I am at your gate.");
+        Message stored = createMessage("2222222222", 2, "+27838884567",
+                "0838884567", "Where are you? You are late! I have asked you to be on time.");
+
+        assertEquals("Message successfully sent.", sent.sentMessage(Message.SENT));
+        assertEquals("Message disregarded.", disregarded.sentMessage(Message.DISREGARDED));
+        assertEquals("Message successfully stored.", stored.sentMessage(Message.STORED));
+
+        assertEquals(1, Message.getSentMessages().length);
+        assertEquals(1, Message.getDisregardedMessages().length);
+        assertEquals(1, Message.getStoredMessages().length);
+        assertEquals(3, Message.getMessageIDs().length);
+        assertEquals(3, Message.getMessageHashes().length);
+        assertEquals(1, Message.returnTotalMessages());
     }
 
-    // It tests if Username incorrectly formatted (kyle!!!!!!!):should return the error message
     @Test
-    public void testUsernameIncorrectlyFormatted() {
-        Login login = new Login();
-        String msg = login.registerUser("kyle!!!!!!!", "Ch&&sec@ke99!", "+27838968976", "John", "Doe");
-        assertEquals("Username is not correctly formatted; please ensure that your username "
-                + "contains an underscore and is no more than five characters in length.", msg);
-        
-        
-        
+    public void findsLongestStoredMessage() {
+        Message longest = createMessage("2222222222", 2, "+27838884567",
+                "0838884567", "Where are you? You are late! I have asked you to be on time.");
+        Message shorter = createMessage("5555555555", 5, "+27838884567",
+                "0838884567", "Ok, I am leaving without you.");
+
+        longest.sentMessage(Message.STORED);
+        shorter.sentMessage(Message.STORED);
+
+        assertSame(longest, Message.findLongestStoredMessage());
     }
 
-    // It tests if Password meets complexity requirements (Ch&&sec@ke99!) :should return success message
     @Test
-    public void testPasswordMeetsComplexity() {
-        Login login = new Login();
-        
-        // @citation: Smith, J. (2023) Java Regex Tutorial. Available at: https://example.com/java-regex (Accessed: 20 August 2026).
-// Tests a valid password through registration and directly verifies password complexity.
-// The Login class does not provide a separate password message method.
-        Login login2 = new Login();
-        String result = login2.registerUser("kyl_1", "Ch&&sec@ke99!", "+27838968976", "John", "Doe");
-        assertTrue(result.startsWith("Username successfully captured"));
-        
-        
-        // Also test the boolean check directly.
-        assertTrue(login2.checkPasswordComplexity("Ch&&sec@ke99!"));
-        
+    public void searchesMessageGroupsByID() {
+        Message sent = createMessage("1111111111", 1, "+27834557896",
+                "0838884567", "Did you get the cake?");
+        Message disregarded = createMessage("3333333333", 3, "+27834484567",
+                "0838884567", "Yohoooo, I am at your gate.");
+        Message stored = createMessage("2222222222", 2, "+27838884567",
+                "0838884567", "Where are you?");
+
+        sent.sentMessage(Message.SENT);
+        disregarded.sentMessage(Message.DISREGARDED);
+        stored.sentMessage(Message.STORED);
+
+        assertSame(sent, Message.searchByMessageID("1111111111"));
+        assertSame(disregarded, Message.searchByMessageID("3333333333"));
+        assertSame(stored, Message.searchByMessageID("2222222222"));
+        assertNull(Message.searchByMessageID("bad-id"));
     }
 
-    // It tests if  Password does not meet complexity requirements (password) : should return error message
     @Test
-    public void testPasswordDoesNotMeetComplexity() {
-        Login login = new Login();
-        
-        String msg = login.registerUser("kyl_1", "password", "+27838968976", "John", "Doe");
-        assertEquals("Password is not correctly formatted; please ensure that the password "
-                + "contains at least eight characters, a capital letter, a number, and a special character.", msg);
+    public void recipientSearchLooksInStoredMessages() {
+        Message first = createMessage("2222222222", 2, "+27838884567",
+                "0838884567", "Where are you?");
+        Message second = createMessage("5555555555", 5, "+27838884567",
+                "0838884567", "Ok, I am leaving without you.");
+        Message other = createMessage("1111111111", 1, "+27834557896",
+                "0838884567", "Did you get the cake?");
+
+        first.sentMessage(Message.STORED);
+        second.sentMessage(Message.STORED);
+        other.sentMessage(Message.SENT);
+
+        assertEquals(2, Message.findMessagesByRecipient("+27838884567").length);
+        assertEquals(0, Message.findMessagesByRecipient("12345").length);
     }
 
-    // It tests if  Cell phone correctly formatted (+27838968976) : should return success message
-    // Note: Your checkCellPhoneNumber expects +27 and exactly 1-10 digits after, which passes.
     @Test
-    public void testCellPhoneCorrectlyFormatted() {
-        Login login = new Login();
-        String msg = login.registerUser("kyl_1", "Ch&&sec@ke99!", "+27838968976", "John", "Doe");
-        
-        
-        // Check that registration succeeds (which implies phone was accepted)
-        assertTrue(msg.startsWith("Username successfully captured"));
-        
-        
-        // Also test the boolean directly
-        assertTrue(login.checkCellPhoneNumber("+27838968976"));
+    public void combinedRecipientSearchReturnsSentAndStoredMessages() {
+        Message sent = createMessage("1111111111", 1, "+27838884567",
+                "0838884567", "Can you bring the orange folder?");
+        Message stored = createMessage("2222222222", 2, "+27838884567",
+                "0838884567", "Meet me at four.");
+
+        sent.sentMessage(Message.SENT);
+        stored.sentMessage(Message.STORED);
+
+        assertEquals(2,
+                Message.findMessagesByRecipientSentAndStored("+27838884567").length);
     }
 
-    // It tests if Cell phone incorrectly formatted (08966553) : should return error message
     @Test
-    public void testCellPhoneIncorrectlyFormatted() {
-        Login login = new Login();
-        
-        String msg = login.registerUser("kyl_1", "Ch&&sec@ke99!", "08966553", "John", "Doe");
-        assertEquals("Cell phone number is incorrectly formatted or does not contain an "
-                + "international code; please correct the number and try again.", msg);
+    public void deletesStoredMessageByHashOnly() {
+        Message stored = createMessage("2222222222", 2, "+27838884567",
+                "0838884567", "Where are you?");
+        Message sent = createMessage("1111111111", 1, "+27834557896",
+                "0838884567", "Did you get the cake?");
+
+        stored.sentMessage(Message.STORED);
+        sent.sentMessage(Message.SENT);
+
+        assertTrue(Message.deleteMessageByHash(stored.getMessageHash()));
+        assertEquals(0, Message.getStoredMessages().length);
+        assertNull(Message.searchByMessageID("2222222222"));
+        assertNotNull(Message.searchByMessageID("1111111111"));
+        assertFalse(Message.deleteMessageByHash("unknown-hash"));
     }
 
-    // == assertTrue or assertFalse TESTS ==
-
-    // It tests if Login Successful (correct credentials)
     @Test
-    public void testLoginSuccessful() {
-        Login login = new Login();
-        
-        login.registerUser("kyl_1", "Ch&&sec@ke99!", "+27838968976", "John", "Doe");
-        assertTrue(login.loginUser("kyl_1", "Ch&&sec@ke99!"));
+    public void readsStoredMessagesFromJSON() throws Exception {
+        Path jsonFile = Files.createTempFile("quickchat-messages", ".json");
+        String previousFile = "messages.json";
+
+        try {
+            Message.setStorageFile(jsonFile.toString());
+
+            Message stored = createMessage("2222222222", 2, "+27838884567",
+                    "0838884567", "Stored test message");
+            stored.sentMessage(Message.STORED);
+
+            Message.resetAllMessageData();
+            Message[] loaded = Message.readStoredMessages(jsonFile.toString());
+
+            assertEquals(1, loaded.length);
+            assertEquals("Stored test message", loaded[0].getMessageText());
+            assertEquals("0838884567", loaded[0].getSender());
+            assertEquals(1, Message.getStoredMessages().length);
+        } finally {
+            Message.setStorageFile(previousFile);
+            Files.deleteIfExists(jsonFile);
+        }
     }
 
-    // It tests if Login Failed (wrong password)
     @Test
-    public void testLoginFailed() {
-        Login login = new Login();
-        
-        
-        login.registerUser("kyl_1", "Ch&&sec@ke99!", "+27838968976", "John", "Doe");
-        assertFalse(login.loginUser("kyl_1", "wrong"));
-        
+    public void reportIncludesFullStoredMessageDetails() {
+        Message stored = createMessage("2222222222", 2, "+27838884567",
+                "0838884567", "Where are you? You are late!");
+
+        stored.sentMessage(Message.STORED);
+        String report = Message.displayMessageReport();
+
+        assertTrue(report.contains("2222222222"));
+        assertTrue(report.contains(stored.getMessageHash()));
+        assertTrue(report.contains("+27838884567"));
+        assertTrue(report.contains("0838884567"));
+        assertTrue(report.contains("Where are you? You are late!"));
+        assertTrue(report.contains("Status: Stored"));
     }
 
-    // It tests if Username correctly formatted (kyl_1) : true
     @Test
-    public void testUsernameCorrectlyFormatted_Boolean() {
-        Login login = new Login();
-        assertTrue(login.checkUserName("kyl_1"));
-    }
+    public void validatesPartTwoMessageData() {
+        Message message = createMessage("1234567890", 0, "+27834557896",
+                "0838884567", "Hi there");
 
-    // It tests if Username incorrectly formatted (kyle!!!!!!!) : false
-    @Test
-    public void testUsernameIncorrectlyFormatted_Boolean() {
-        Login login = new Login();
-        assertFalse(login.checkUserName("kyle!!!!!!!"));
+        assertTrue(message.checkMessageID());
+        assertEquals("Message ready to send.",
+                Message.checkMessageLength("short"));
+        assertEquals("Message ID generated: 1234567890",
+                message.displayMessageID());
+        assertTrue(message.getMessageHash().startsWith("12:0:"));
     }
-
-    // It tests if Password meets complexity requirements (Ch&&sec@ke99!) : true
-    @Test
-    public void testPasswordMeetsComplexity_Boolean() {
-        Login login = new Login();
-        
-        assertTrue(login.checkPasswordComplexity("Ch&&sec@ke99!"));
-    }
-
-    // It tests if Password does not meet complexity requirements (password) :false
-    @Test
-    public void testPasswordDoesNotMeetComplexity_Boolean() {
-        Login login = new Login();
-        
-        assertFalse(login.checkPasswordComplexity("password"));
-        
-    }
-
-    //It tests if Cell phone correctly formatted (+27838968976) : true
-    @Test
-    public void testCellPhoneCorrectlyFormatted_Boolean() {
-        Login login = new Login();
-        
-        assertTrue(login.checkCellPhoneNumber("+27838968976"));
-        
-    }
-
-    // It tests if Cell phone incorrectly formatted (08966553) : false
-    @Test
-    public void testCellPhoneIncorrectlyFormatted_Boolean() {
-        Login login = new Login();
-        
-        assertFalse(login.checkCellPhoneNumber("08966553"));
-    }
-    
-    
 }
-
